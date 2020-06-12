@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 
 namespace ZabbixSenderCore
 {
-    public class Data
+    public class ZabbixData
     {
         [JsonProperty("host")]
         public string Host { get; set; }
@@ -19,7 +19,7 @@ namespace ZabbixSenderCore
         [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTime? Clock { get; set; }
 
-        public Data(string host, string key, string value, DateTime? clock = null)
+        public ZabbixData(string host, string key, string value, DateTime? clock = null)
         {
             this.Host = host;
             this.Key = key;

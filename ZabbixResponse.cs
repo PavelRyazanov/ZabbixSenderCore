@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace ZabbixSenderCore
 {
-    public class Response
+    public class ZabbixResponse
     {
 
         [JsonProperty("response")]
@@ -11,7 +11,7 @@ namespace ZabbixSenderCore
         [JsonProperty("info")]
         public string InfoString { get; private set; }
 
-        public Response(string response, string info)
+        public ZabbixResponse(string response, string info)
         {
             this.Status = response;
             this.InfoString = info;

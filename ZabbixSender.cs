@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace ZabbixSenderCore
 {
-    public class Service
+    public class ZabbixSender
     {
         private const int AWAITING_DATA_DELAY = 10;
         private const int RESPONSE_HEADER_LENGTH = 13;
@@ -20,7 +20,7 @@ namespace ZabbixSenderCore
         public int ServerPort { get; set; }
         public int ConnectionTimeout { get; set; }
 
-        public Service(string serverAddress, int port = 10051, int timeout = 150)
+        public ZabbixSender(string serverAddress, int port = 10051, int timeout = 150)
         {
             if (port <= 0 || port > 65_535)
                 throw new ArgumentException("Port number must be between 1 and 65 535");
@@ -37,17 +37,17 @@ namespace ZabbixSenderCore
             this._serializer = new JsonSerializer();
         }
 
-        public async Task<Response> Send(string host, string key, string value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
+        public async Task<ZabbixResponse> Send(string host, string key, string value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
         {
-            return await this.Send(new Data[] { new Data(host, key, value, dateTime) }, cancellationToken);
+            return await this.Send(new ZabbixData[] { new ZabbixData(host, key, value, dateTime) }, cancellationToken);
         }
 
-        public async Task<Response> Send(Data data, CancellationToken cancellationToken = default)
+        public async Task<ZabbixResponse> Send(ZabbixData data, CancellationToken cancellationToken = default)
         {
-            return await this.Send(new Data[] { data }, cancellationToken);
+            return await this.Send(new ZabbixData[] { data }, cancellationToken);
         }
 
-        public async Task<Response> Send(Data[] data, CancellationToken cancellationToken = default)
+        public async Task<ZabbixResponse> Send(ZabbixData[] data, CancellationToken cancellationToken = default)
         {
             var message = this.GetMessageBuffer(data);
             using(var client = new TcpClient())
@@ -71,15 +71,15 @@ namespace ZabbixSenderCore
                     } while (stream.CanRead && bytesReaded == READ_BUFFER_LENGTH);
                     
                     var responseString = responseMessage.ToString(RESPONSE_HEADER_LENGTH, responseMessage.Length - RESPONSE_HEADER_LENGTH);
-                    var result = JsonConvert.DeserializeObject<Response>(responseString);
+                    var result = JsonConvert.DeserializeObject<ZabbixResponse>(responseString);
                     return result;
                 }
             }
         }
 
-        private byte[] GetMessageBuffer(Data[] data)
+        private byte[] GetMessageBuffer(ZabbixData[] data)
         {
-            var request = new Request(data);
+            var request = new ZabbixRequest(data);
             var dataString = JsonConvert.SerializeObject(request);
             var dataBuffer = Encoding.ASCII.GetBytes(dataString);
             var datalenBuffer = BitConverter.GetBytes((long)dataBuffer.Length);

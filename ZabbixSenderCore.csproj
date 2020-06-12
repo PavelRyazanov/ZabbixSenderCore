@@ -2,7 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Pavel Ryazanov</Authors>
+    <Description>Lightweight zabbix sender</Description>
+    <PackageTags>zabbix trapper zabbix_sender</PackageTags>
+    <RepositoryUrl>https://github.com/PavelRyazanov/ZabbixSenderCore</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/PavelRyazanov/ZabbixSenderCore</PackageProjectUrl>
+    <PackageLicenseFile></PackageLicenseFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>Pavel Ryazanov</Copyright>
+    <Company />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LICENSE" />
+    <None Remove="LICENSE" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

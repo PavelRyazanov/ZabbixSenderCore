@@ -13,18 +13,35 @@ namespace ZabbixSenderCore
         public string Key { get; set; }
 
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public object Value { get; private set; }
 
         [JsonProperty("clock", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTime? Clock { get; set; }
 
-        public ZabbixData(string host, string key, string value, DateTime? clock = null)
+        protected ZabbixData(string host, string key, DateTime? clock = null)
         {
             this.Host = host;
             this.Key = key;
-            this.Value = value;
             this.Clock = clock;
+        }
+
+        public ZabbixData(string host, string key, string value, DateTime? clock = null)
+            : this(host, key, clock)
+        {
+            this.Value = value;
+        }
+
+        public ZabbixData(string host, string key, int value, DateTime? clock = null)
+            : this(host, key, clock)
+        {
+            this.Value = value;
+        }
+
+        public ZabbixData(string host, string key, float value, DateTime? clock = null)
+            : this(host, key, clock)
+        {
+            this.Value = value;
         }
     }
 }

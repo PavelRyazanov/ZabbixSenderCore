@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
@@ -38,6 +38,16 @@ namespace ZabbixSenderCore
         }
 
         public async Task<ZabbixResponse> Send(string host, string key, string value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
+        {
+            return await this.Send(new ZabbixData[] { new ZabbixData(host, key, value, dateTime) }, cancellationToken);
+        }
+
+        public async Task<ZabbixResponse> Send(string host, string key, int value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
+        {
+            return await this.Send(new ZabbixData[] { new ZabbixData(host, key, value, dateTime) }, cancellationToken);
+        }
+
+        public async Task<ZabbixResponse> Send(string host, string key, float value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
         {
             return await this.Send(new ZabbixData[] { new ZabbixData(host, key, value, dateTime) }, cancellationToken);
         }

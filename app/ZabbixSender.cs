@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace ZabbixSenderCore
 {
-    public class ZabbixSender
+    public class ZabbixSender: IZabbixSenderService
     {
         private const int AWAITING_DATA_DELAY = 10;
         private const int RESPONSE_HEADER_LENGTH = 13;

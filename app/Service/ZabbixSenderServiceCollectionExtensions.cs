@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddZabbixService(this IServiceCollection services)
         {
-            services.AddTransient<IZabbixSenderService, ZabbixSenderService>();
+            services.AddTransient<IZabbixSenderService, ZabbixSender>();
             return services;
         }
     }

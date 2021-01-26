@@ -4,23 +4,25 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace ZabbixSenderCore
 {
-    public class ZabbixSender
+    public class ZabbixSender: IZabbixSenderService
     {
         private const int AWAITING_DATA_DELAY = 10;
         private const int RESPONSE_HEADER_LENGTH = 13;
         private const int READ_BUFFER_LENGTH = 1024;
 
         private byte[] _headerBuffer = Encoding.ASCII.GetBytes("ZBXD\x01");
-        private JsonSerializer _serializer;
+        private JsonSerializer _serializer = new JsonSerializer();
 
         public string ServerAddress { get; set; }
         public int ServerPort { get; set; }
         public int ConnectionTimeout { get; set; }
 
-        public ZabbixSender(string serverAddress, int port = 10051, int timeout = 150)
+        public ZabbixSender(string serverAddress, int port = Constants.DefaultServerPort, int timeout = Constants.DefaultTimeout)
         {
             if (port <= 0 || port > 65_535)
                 throw new ArgumentException("Port number must be between 1 and 65 535");
@@ -34,7 +36,27 @@ namespace ZabbixSenderCore
             this.ServerAddress = serverAddress;
             this.ServerPort = port;
             this.ConnectionTimeout = timeout;
-            this._serializer = new JsonSerializer();
+        }
+
+        public ZabbixSender(IConfiguration configuration)
+        {
+            if (configuration is null)
+                throw new ArgumentNullException($"{nameof(configuration)} is required.");
+
+            var configSection = configuration.GetSection(Constants.ConfigurationSectionName);
+            if (configSection is null)
+                throw new ArgumentException($"Configuration section \"{Constants.ConfigurationSectionName}\" not found.");
+
+            var serverAddress = configSection.GetValue<string>(Constants.ConfigurationServerAddress);
+            if (serverAddress is null)
+                throw new ArgumentException($"Configuration \"{Constants.ConfigurationServerAddress}\" not found.");
+
+            var serverPort = configSection.GetValue<int>(Constants.ConfigurationServerPort, Constants.DefaultServerPort);
+            var connectionTimeout = configSection.GetValue<int>(Constants.ConfigurationConnectionTimeout, Constants.DefaultTimeout);
+
+            this.ServerAddress = serverAddress;
+            this.ServerPort = serverPort;
+            this.ConnectionTimeout = connectionTimeout;
         }
 
         public async Task<ZabbixResponse> Send(string host, string key, string value, DateTime? dateTime = null, CancellationToken cancellationToken = default)
